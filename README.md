@@ -47,7 +47,7 @@ Defining controller:
 	});
 })(AnnJS);
 ```
-Defining controller (which will wait for controllername.onDomReady execution):
+Defining controller (which will wait for controllername.shot execution):
 ```js
 ;(function(AnnJS) {
 	var config = {

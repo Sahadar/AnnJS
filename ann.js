@@ -714,7 +714,7 @@ var AnnConfig = AnnConfig || {};
 				//executes onDomReady for controller
 				if(rootObject.refs) {
 					AnnJS.execute({
-						method : rootObject.namespace+'.onDomReady',
+						execute : executeCallQueries,
 						relatives : getAllRefs(rootObject.refs)
 					});
 				} else {

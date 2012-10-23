@@ -1,6 +1,6 @@
 AnnJS
 =====
-Another New-fashion JavaScript Framework
+**An**other **n**ew-fashion JavaScript Framework
 
 Requires:
 

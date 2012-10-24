@@ -11,6 +11,8 @@ Requires
 Usage
 --------
 
+**Please check examples first**
+
 Defining controller:
 ```js
 ;(function(AnnJS) {
@@ -53,7 +55,7 @@ Defining controller (which will wait for controllername.shot execution):
 	var config = {
 		namespace  : 'controllername.2',
 		//dependencies
-		//waits untill controllername.shot executes then gives to "that.refs.controllername" reference to 'controllername" object
+		//waits until controllername.shot executes then gives to "that.refs.controllername" reference to 'controllername" object
 		refs : {
 			controllername : 'controllername.shot'
 		}

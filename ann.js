@@ -685,7 +685,9 @@ var AnnConfig = AnnConfig || {};
 									})();
 								}
 							}
-							(rootObject.elements[element].length === 0) ? console.warn('There is no element with "'+selector+'" selector, executed by "'+namespace+'" object') : null;	
+							if (rootObject.elements[element].length === 0) {
+								console.warn('There is no element with "'+selector+'" selector, executed by "'+namespace+'" object')
+							}	
 						}
 					}
 					onDomReady();

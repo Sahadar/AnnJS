@@ -80,3 +80,18 @@ Defining controller (which will wait for controllername.shot execution):
 	});
 })(AnnJS);
 ```
+Versions:
+---------
+
+0.01
+- method registerController
+- method execute
+- method namespace
+- made example about dependencies
+
+0.02:
+- method registerMixin
+- method mixin
+- improved events
+- improved controller method: makeObject
+- made example about events

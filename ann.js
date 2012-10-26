@@ -1,7 +1,7 @@
 /**
  * 
  * AnnJS JavaScript Framework
- * version: 0.01
+ * version: 0.02
  *
  * Author: Wojciech Dłubacz (Sahadar)
  * Licensed under GPL Version 2 license
@@ -41,7 +41,8 @@ var AnnConfig = AnnConfig || {};
 		getTemplateMethod		: 'GET',
 		timeStamp				: Math.floor(Math.random()*1000000000000000),
 		language				: null,
-		fulldebug				: false
+		fulldebug				: false,
+		hashString				: 'data-hash'
 		
 		}, AnnConfig);
 	_AnnConfig = $.extend(true, {}, AnnConfig);
@@ -122,36 +123,6 @@ var AnnConfig = AnnConfig || {};
 	var _executionObject = {}; //storage of execution
 	var _templatesStorage = {}; //storage of callback for template
 	var _controllers = {}; //object which has controllers inside
-	/**
-	 * Has every created object from mixins inside
-	 * @type {Object}
-	 */
-	var _objects = {
-		/**
-		 * Funkcja odpowiedzialna za obsluge przestrzeni nazw w obiekcie _objects
-		 * @param ns_string string w ktorym po kropce "dyktujemy" jakie kolejne obiekty chcemy tworzyc
-		 * @return parent Zwraca obiekt _objects
-		 */
-		namespace : function(ns_string) {
-			var ns_string = (typeof ns_string === 'string') ? ns_string : (console.error('ns_string must be string type'), 'randomString'),
-				parts = ns_string.split('.'),
-				parent = _objects,
-				i;
-			
-			if (parts[0] === "objects") {
-				parts = parts.slice(1);
-			}
-			
-			for (i = 0; i < parts.length; i += 1) {
-				if (typeof parent[parts[i]] === "undefined") {
-					parent[parts[i]] = {};
-				}
-				parent = parent[parts[i]];
-			}
-			parent.hashString = parts.join('.');
-			return parent;
-		}
-	};
 	function getExecutionObject(namespace) {
 		var parts = namespace.split('.'),
 			nsObject = _executionObject,
@@ -176,6 +147,56 @@ var AnnConfig = AnnConfig || {};
 	 * @type {object}
 	 */
 	var _AnnJS = {
+		/**
+		 * Objected mixins
+		 */
+		objects : {
+			/**
+			 * Funkcja odpowiedzialna za obsluge przestrzeni nazw w obiekcie _objects
+			 * @param ns_string string w ktorym po kropce "dyktujemy" jakie kolejne obiekty chcemy tworzyc
+			 * @return parent Zwraca obiekt _objects
+			 */
+			namespace : function(ns_string) {
+				var ns_string = (typeof ns_string === 'string') ? ns_string : (console.error('ns_string must be string type'), 'randomString'),
+					parts = ns_string.split('.'),
+					parent = _AnnJS.objects,
+					i;
+				
+				if (parts[0] === "objects") {
+					parts = parts.slice(1);
+				}
+				
+				for (i = 0; i < parts.length; i += 1) {
+					if (typeof parent[parts[i]] === "undefined") {
+						parent[parts[i]] = {};
+					}
+					parent = parent[parts[i]];
+				}
+				parent.namespace = parts.join('.');
+				return parent;
+			}
+		},
+		mixins : {},
+		/**
+		 * Returns mixin from given namespace
+		 * @param string namespace The name of mixin which we want to obtain
+		 * @param object object which 
+		 * @return boolean true -> succeeded
+		 *                 false -> failed
+		 */
+		registerMixin : function(namespace, object) {
+			var namespace = (typeof namespace === 'string') ? namespace : console.error('namespace must be string type'),
+				that = this,
+				functionName = null;
+
+			if(typeof that.mixins[namespace] === 'object') {
+				console.warn('Mixin with namespace '+namespace+' is already registered');
+				return false;
+			} else {
+				_AnnJS.mixins[namespace] = object;
+				return true;
+			}
+		},
 		/**
 		 * Function which tells us which things (from styles or scripts), from array are already loaded on page and returns us only things which we don't have yet
 		 * @param string what we decide if it is 'css' or 'js'
@@ -309,7 +330,7 @@ var AnnConfig = AnnConfig || {};
 				checkedParts.push(parts[i]);
 				if(typeof parent[parts[i]] !== 'object') {
 					parent[parts[i]] = {
-						controller : {},
+						controller : null,
 						namespace : checkedParts.join('.'),
 						innerControllers : {}
 					};
@@ -319,6 +340,9 @@ var AnnConfig = AnnConfig || {};
 				} else {
 					parent = parent[parts[i]].controller;
 				}
+			}
+			if(parent == null) {
+				parent = {};
 			}
 			parent.namespace = ns_string;
 			parent.createdObjects = [];
@@ -378,8 +402,8 @@ var AnnConfig = AnnConfig || {};
 					extension = main;
 				}
 				//If it is already AnnJS "object"
-				if(main instanceof jQuery && main.getObject() !== null) {
-					rootObject = main.getObject();
+				if(main instanceof jQuery && AnnJS.getObject(main) !== null) {
+					rootObject = AnnJS.getObject(main);
 				} else if(main instanceof jQuery) {
 					rootObject = {
 						elements : {
@@ -433,12 +457,12 @@ var AnnConfig = AnnConfig || {};
 					 */
 					$.each(rootObject.elements, function(item) {
 						if(rootObject.elements[item].length === 0) {
-							console.warn('There is no element ', item, ' in ', rootObject, ' object, from ', that.hashString);
+							console.warn('There is no element ', item, ' in ', rootObject, ' object, from ', that.namespace);
 						}
 					});
 				}
 				if(main instanceof jQuery) {
-					var hashObject = _objects.namespace(that.hashString);
+					var hashObject = _AnnJS.objects.namespace(that.namespace);
 					$A.addToHash(hashObject, rootObject);
 				}
 				
@@ -1051,36 +1075,32 @@ var AnnConfig = AnnConfig || {};
 				});
 			}
 		},
-		skeletons : {},
 		/**
-		 * Metoda wykonujÄ…ca operacjÄ™ na skeletonie
-		 * @param string name Nazwa skeletone'a ktÃ³rego chcemy pobrac
-		 * @param object object dodawanie nowego obiektu skeletonowego
-		 * @return obiekt skeletona
+		 * Returns mixin from given namespace
+		 * @param string namespace The name of mixin which we want to obtain
+		 * @return object mixin object
 		 */
-		mixin : function(name, object) {
-			var name = (typeof name === 'string') ? name : console.error('name must be string type'),
-				object = (object instanceof Object) ? object : null,
+		mixin : function(namespace) {
+			var namespace = (typeof namespace === 'string') ? namespace : console.error('namespace must be string type'),
 				that = this,
 				functionName = null;
-			
-			if(object === null){
-				return $.extend(true, {}, AnnJS.skeletons[name]);
+			if(typeof _AnnJS.mixins[namespace] === 'object') {
+				return $.extend(true, {}, _AnnJS.mixins[namespace]);
 			} else {
-				that.skeletons[name] = object;
-				return object;
+				console.warn('There\'s no mixin with '+namespace+' namespace');
+				return null;
 			}
 		},
 		/**
 		 * Controllers getter function
 		 * If object already exists then this existing object will be returned
 		 * 		otherwise object will be attached to namespace
-		 * @param ns_string string in this string dot is separator for the objects
+		 * @param namespace string in this string dot is separator for the objects
 		 * @return parent returns created object
 		 */
-		namespace : function(ns_string) {
-			var ns_string = (typeof ns_string === 'string') ? ns_string : console.error('ns_string must be string type'),
-				parts = ns_string.split('.'),
+		namespace : function(namespace) {
+			var namespace = (typeof namespace === 'string') ? namespace : console.error('Namespace must be string type'),
+				parts = namespace.split('.'),
 				parent = _controllers, //setting initialization namespace
 				i = 0;
 
@@ -1115,8 +1135,11 @@ var AnnConfig = AnnConfig || {};
 			var randomNumber = that.generateRandomNumber();
 			var elementHash = placement + '.' + randomNumber;
 			
-			element.attr(hashString, elementHash);
+			element.attr(_AnnConfig.hashString, elementHash);
 			return randomNumber;
+		},
+		getHash : function(element) {
+			return element.attr(_AnnConfig.hashString);
 		},
 		/**
 		 * Gets object from element
@@ -1133,14 +1156,14 @@ var AnnConfig = AnnConfig || {};
 			if(typeof element === 'string') {
 				elementHash = element;
 			} else if(typeof element === 'object') {
-				if(typeof element.getHash() === 'string') {
-					elementHash = element.getHash();
+				if(typeof AnnJS.getHash(element) === 'string') {
+					elementHash = AnnJS.getHash(element);
 				} else {
 					return null;
 				}
 			}
 			var parts = elementHash.split('.'),
-				parent = _objects,
+				parent = _AnnJS.objects,
 				i;
 			
 			if (parts[0] === "AnnJS") {
@@ -1166,7 +1189,7 @@ var AnnConfig = AnnConfig || {};
 			if(hashObject === null) {
 				hashObject = this;
 			}
-			var elementNumber = AnnJS.appendHashForElement(hashObject.hashString, elementObject.elements.main);
+			var elementNumber = AnnJS.appendHashForElement(hashObject.namespace, elementObject.elements.main);
 			hashObject[elementNumber] = elementObject;
 			return hashObject;
 		},
@@ -1188,12 +1211,18 @@ var AnnConfig = AnnConfig || {};
 			var that = this,
 				namespace = (typeof configure.namespace === 'string') ? configure.namespace : console.error('namespace must be string type, while running '+namespace);
 			if(_AnnConfig.fulldebug === true) {
-				console.info('Initializing: ' + namespace);
+				console.info('Registering controller: ' + namespace);
 			}
 			var	extension =  (typeof extension === 'object') ? extension : console.error('extenstion must be object type, while running '+namespace);
 			//give namespace parameter to extension
 			if(typeof configure.refs === 'object' && configure.refs !== null) {
 				extension.refs = configure.refs;
+			}
+			var obtainedController = that.namespace(configure.namespace);
+			if(typeof obtainedController === 'object' &&
+				obtainedController != null) {
+				console.error('Controller with namespace ' + namespace + ' is already registered');
+				return;
 			}
 			extension.namespace = configure.namespace;
 
@@ -1207,13 +1236,13 @@ var AnnConfig = AnnConfig || {};
 		registerMixin : function(configure, extension) {
 			var that = this,
 				namespace = (typeof configure.namespace === 'string') ? configure.namespace : console.error('namespace must be string type, while running '+namespace);
-			if(_AnnConfig.fulldebug === true) {
-				console.info('Initializing: ' + namespace);
-			}
 			
-			// AnnJS.execute({
-			// 	namespace 
-			// });
+			if(_AnnConfig.fulldebug === true) {
+				console.info('Registering mixin: ' + namespace);
+			}
+			extension.namespace = configure.namespace;
+
+			_AnnJS.registerMixin(configure.namespace, extension);
 		}
 	}
 	$.extend(AnnJS.scripts['__loaded'], _AnnConfig.jsAsset);

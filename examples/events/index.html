@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<script type="text/javascript" src="head/jquery.js"></script>
+		<script type="text/javascript" src="head/lazyload.js"></script>
+		<script type="text/javascript" src="../../ann.js"></script>
+		<script type="text/javascript" src="lib/chat/controller.chat.js"></script>
+		<script type="text/javascript" src="lib/chat/mixin.minibox.js"></script>
+		<script type="text/javascript" src="lib/chat/mixin.form.js"></script>
+		<style type="text/css">
+			.mini-chat-box {
+				position: fixed;
+				bottom: 0px;
+				right: 0px;
+				width: 200px;
+				background: orange;
+			}
+			.content {
+				background-color: blue;
+				min-height: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="hello">Hello!</section>
+		<div id="chat-box" style="background-color: red;">
+			<div class="header">Chat box</div>
+			<span class="sub-header">Type some text:</span>
+			<textarea></textarea>
+			<input type="submit" />
+			<div class="content"></div>
+		</div>
+		<div class="mini-chat-box">
+			<div class="header">Min chat box</div>
+			<div class="content"></div>
+		</div>
+	</body>
+</html>

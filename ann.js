@@ -1,7 +1,7 @@
 /**
  * 
  * AnnJS JavaScript Framework
- * version: 0.02
+ * version: 0.03
  *
  * Author: Wojciech Dłubacz (Sahadar)
  * Licensed under GPL Version 2 license
@@ -475,6 +475,7 @@ var AnnConfig = AnnConfig || {};
 				}
 				
 				rootObject.root = that;
+				rootObject.createdObjects = [];
 				
 				that.createdObjects.push(rootObject);
 				
@@ -486,6 +487,9 @@ var AnnConfig = AnnConfig || {};
 					var madeObject = parent.makeObject.apply(rootObject, arguments);
 					madeObject.parentObject = rootObject;
 					return madeObject;
+				}
+				rootObject.rebuildObjectsTable = function() {
+					return parent.rebuildObjectsTable.apply(rootObject, arguments);
 				}
 				
 				//executing construct
@@ -505,7 +509,6 @@ var AnnConfig = AnnConfig || {};
 						})();
 					}
 				}
-				rootObject.createdObjects = [];
 				return rootObject;
 			};
 			return parent;

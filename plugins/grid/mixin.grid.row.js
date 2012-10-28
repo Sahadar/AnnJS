@@ -10,7 +10,6 @@
 		__construct : function() {
 			var that = this;
 
-			console.info('that: ', that);
 			that.elements.main.css({
 				position : 'absolute',
 				top : that.root.data.rowHeight*that.data.number,
@@ -20,11 +19,13 @@
 		appendToGrid : function() {
 			var that = this;
 
+			that.root.data.visibleRows['row'+that.data.number] = that;
 			that.root.elements.grid.append(that.elements.main);
 		},
 		detach : function() {
 			var that = this;
 
+			delete that.root.data.visibleRows['row'+that.data.number];
 			that.elements.main.detach();
 		}
 	});

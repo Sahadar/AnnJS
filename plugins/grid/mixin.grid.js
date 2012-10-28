@@ -17,7 +17,6 @@
 
 	AnnJS.registerMixin(config, {
 		data : {
-			renderedRows : {},
 			visibleRows : {},
 			actualDataNumberMin : 0,
 			actualDataNumberMax : 0,
@@ -42,7 +41,6 @@
 				}, 100);
 			});
 			that.renderVisibleRows();
-			console.info('that: ', that);
 		},
 		setContener : function() {
 			var that = this,
@@ -97,10 +95,10 @@
 		renderRow : function(rowNumber, callback) {
 			var that = this;
 
-			if(typeof that.data.renderedRows['row'+rowNumber] === 'object') {
-				that.data.renderedRows['row'+rowNumber].appendToGrid();
+			if(typeof that.createdObjects.number === 'object' && typeof that.createdObjects.number[rowNumber] === 'object') {
+				that.createdObjects.number[rowNumber].appendToGrid();
 				if(typeof callback === 'function') {
-					callback(that.data.renderedRows['row'+rowNumber]);
+					callback(that.createdObjects.number[rowNumber]);
 				}
 			} else {
 				AnnJS.tpl('row', rowFakedData['row'+rowNumber], function(template) {
@@ -110,15 +108,17 @@
 						}
 					}));
 
-					that.data.renderedRows['row'+rowNumber] = rowObject;
-					that.elements.grid.append(template);
-					that.data.visibleRows['row'+rowNumber] = rowObject;
+					rowObject.appendToGrid();
 					if(typeof callback === 'function') {
 						callback(template);
 					}
 				});
 			}
 		},
+		/**
+		 * Row garbage collector
+		 * Runs asynchronously when user is not making any action
+		 */
 		detachInvisibleRows : function() {
 			var that = this;
 
@@ -144,6 +144,7 @@
 						rowObject.detach();
 					}
 				}
+				that.rebuildObjectsTable();
 				that.data.detachInvisibleRows = null;
 			}, 2000);
 		}

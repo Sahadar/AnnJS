@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<script type="text/javascript" src="lib/jquery.js"></script>
+		<script type="text/javascript" src="lib/lazyload.js"></script>
+		<script type="text/javascript" src="lib/mustache.js"></script>
+		<script type="text/javascript">
+			AnnConfig = {
+				tplDir : '/tpl/'
+			}
+		</script>
+		<script type="text/javascript" src="../../ann.js"></script>
+		<script type="text/javascript" src="../../plugins/grid/controller.grid.js"></script>
+		<script type="text/javascript" src="../../plugins/grid/mixin.grid.js"></script>
+		<script type="text/javascript" src="../../plugins/grid/mixin.grid.row.js"></script>
+		<style>
+			.ann-grid {
+				width: 100%;
+				min-height: 100px;
+				background-color: orange;
+			}
+			.ann-grid .grid {
+				height: 400px;
+				background-color: yellow;
+			}
+			.row {
+				height: 100px;
+				background-color: blue;
+				border: 1px solid gray;
+				overflow: hidden;
+				position: absolute;
+			}
+			.column {
+				float: left;
+				width: 400px;
+				height: 100%;
+				border: 1px solid red;
+			}
+		</style>
+	</head>
+	<body>
+		<section>
+			<header>Example of ann-grid:</header>
+			<div class="ann-grid" data-ann='{"count":200,"rowHeight":100}'>
+				<header>Some header for grid</header>
+				<div class="grid"></div>
+			</div>
+		</section>
+	</body>
+</html>

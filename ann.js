@@ -40,6 +40,8 @@ var AnnConfig = AnnConfig || {};
 		cssTimeStampPrefix		: '?',
 		getTemplateMethod		: 'GET',
 		timeStamp				: Math.floor(Math.random()*1000000000000000),
+		tplTimeStamp 			: Math.floor(Math.random()*1000000000000000),
+		tplSuffix 				: '.tpl',
 		language				: null,
 		fulldebug				: false,
 		hashString				: 'data-hash'
@@ -104,20 +106,6 @@ var AnnConfig = AnnConfig || {};
 		}
 		return false;
 	}
-	$.fn.getData = function(remove) {
-		var that = this,
-			remove = (typeof remove !== 'undefined') ? remove : true;
-		
-		if(that.attr('z-data') !== undefined && that.attr('z-data')) {
-			var data = $.parseJSON(that.attr('z-data'));
-			if(remove) {
-				that.removeAttr('z-data');
-			}
-			return data;
-		} else {
-			return null;
-		}
-	}
 	
 	var _eventObject = {};
 	var _executionObject = {}; //storage of execution
@@ -147,6 +135,20 @@ var AnnConfig = AnnConfig || {};
 	 * @type {object}
 	 */
 	var _AnnJS = {
+		getData : function(element, remove) {
+			var that = element,
+				remove = (typeof remove !== 'undefined') ? remove : true;
+			
+			if(that.attr('data-ann') !== undefined && that.attr('data-ann')) {
+				var data = $.parseJSON(that.attr('data-ann'));
+				if(remove) {
+					that.removeAttr('data-ann');
+				}
+				return data;
+			} else {
+				return null;
+			}
+		},
 		/**
 		 * Objected mixins
 		 */
@@ -265,11 +267,11 @@ var AnnConfig = AnnConfig || {};
 			_templatesStorage[templateName].push(callback);
 			if(typeof that[templateName] === 'undefined') {
 	    		that[templateName] = 'loading';
-				$.ajax({
+	    		$.ajax({
 					type : "GET",
-					contentType: 'text/plain',
+					dataType: 'text',
 					cache : true,
-				    url: window.location.protocol + '//' + window.location.host + AnnConfig.tplDir + templateName + "&" + _c("TPL_TIMESTAMP"),
+				    url: window.location.href + _AnnConfig.tplDir + templateName + _AnnConfig.tplSuffix + _AnnConfig.tplTimeStampPrefix + _AnnConfig.tplTimeStamp,
 				    success : function(data) {
 				    	var template = null,
 				    		result = null,
@@ -281,29 +283,11 @@ var AnnConfig = AnnConfig || {};
 				    		return;
 				    	}
 				    	if(typeof Mustache === 'object') {
-				    		if(data.match(/^\<\*CSS_TO_LOAD\*(.*)\*\>/i)) {
-					    		result = data.match(/^\<\*CSS_TO_LOAD\*(.*)\*\>/i)[1].trim().split(',');
-					    		template = data.replace(/^\<\*CSS_TO_LOAD\*(.*)\*\>\s*/i, '');
-				    		} else {
-					    		template = data;
-				    		}
-				    		if(result !== null && result.length > 0) {
-				    			$A.styles.loadStyles(result, function() {
-				    				var i = 0,
-				    					templateStorageLength = _templatesStorage[templateName].length;
-				    				that[templateName] = template;
-				    				
-							    	for(i = 0; i < templateStorageLength; i++) {
-							    		_templatesStorage[templateName].shift()(that[templateName]);
-							    	}
-								}, true);
-				    		} else {
-					    		that[templateName] = template;
-					    		templateStorageLength = _templatesStorage[templateName].length;
-						    	for(i = 0; i < templateStorageLength; i++) {
-						    		_templatesStorage[templateName].shift()(that[templateName]);
-						    	}
-				    		}
+				    		that[templateName] = data;
+				    		templateStorageLength = _templatesStorage[templateName].length;
+					    	for(i = 0; i < templateStorageLength; i++) {
+					    		_templatesStorage[templateName].shift()(that[templateName]);
+					    	}
 				    	} else {
 				    		delete that[templateName];
 				    		console.error('We\'re sorry but template engine has not occured');
@@ -411,9 +395,9 @@ var AnnConfig = AnnConfig || {};
 						}
 					}
 					
-					if(main.attr('data-a') !== undefined) {
+					if(main.attr('data-ann') !== undefined) {
 						$.extend(true, extension, {
-							data: main.getData()
+							data: _AnnJS.getData(main)
 						});
 					}
 				}
@@ -497,9 +481,9 @@ var AnnConfig = AnnConfig || {};
 				if(!that.createdObjects.all) that.createdObjects.all = [];
 				that.createdObjects.all.push(rootObject);
 				
-				//objects can make other objects but reference will be assigned
+				//objects can make other objects
 				rootObject.makeObject = function() {
-					var madeObject = parent.makeObject.apply(parent, arguments);
+					var madeObject = parent.makeObject.apply(rootObject, arguments);
 					madeObject.parentObject = rootObject;
 					return madeObject;
 				}
@@ -521,6 +505,7 @@ var AnnConfig = AnnConfig || {};
 						})();
 					}
 				}
+				rootObject.createdObjects = [];
 				return rootObject;
 			};
 			return parent;
@@ -1073,7 +1058,7 @@ var AnnConfig = AnnConfig || {};
 				callback.call(bindObject, $(Mustache.to_html(that[templateName], data)));
 			} else {
 				_AnnJS.getTemplate(templateName, function(template) {
-					callback.call(bindObject, $(Mustache.to_html(that[templateName], data)));
+					callback.call(bindObject, $(Mustache.to_html(template, data)));
 				});
 			}
 		},
@@ -1082,12 +1067,14 @@ var AnnConfig = AnnConfig || {};
 		 * @param string namespace The name of mixin which we want to obtain
 		 * @return object mixin object
 		 */
-		mixin : function(namespace) {
+		mixin : function(namespace, extension) {
 			var namespace = (typeof namespace === 'string') ? namespace : console.error('namespace must be string type'),
 				that = this,
 				functionName = null;
+
 			if(typeof _AnnJS.mixins[namespace] === 'object') {
-				return $.extend(true, {}, _AnnJS.mixins[namespace]);
+				extension = extension || {};
+				return $.extend(true, extension, _AnnJS.mixins[namespace]);
 			} else {
 				console.warn('There\'s no mixin with '+namespace+' namespace');
 				return null;

@@ -1,0 +1,1 @@
+To run this grid system You need working webserver -> Apache, othwerwise ajax requests which gets tempalte will not work (because of configuration)

@@ -1,0 +1,1 @@
+Take into account that no matter which script is in head first (lib/turret/controller.turret.js) or (lib/turret/box/controller.box.js), execution works exactly as we've set it in controller dependency configuration.

@@ -879,16 +879,14 @@ var AnnConfig = AnnConfig || {};
 			if(recurrent === false) {
 				executeCallback(nsObject['_events']);
 			}
-			nsObject['_publishes'].push(args);
 		},
 		/**
 		 * Subscribe event
 		 * @param ns_string string namespace string splited by dots
 		 * @param callback function function executed after publishing event
 		 * @param givenObject object/nothing Optional object which will be used as "this" in callback
-		 * @param cachedSubscribtion boolean Optional - if true then this subscribtion will execute all previous publishes
 		 */
-		subscribe : function(ns_string, callback, givenObject, cachedSubscribtion) {
+		subscribe : function(ns_string, callback, givenObject) {
 			var ns_string = (typeof ns_string === 'string') ? ns_string : (console.error('ns_string must be string type'), 'randomString'),
 				parts = ns_string.split('.'),
 				nsObject, //Namespace object to which we attach event
@@ -897,7 +895,7 @@ var AnnConfig = AnnConfig || {};
 				eventObject = null,
 				i = 0,
 				k = 0,
-				subscribeArguments = arguments; //executing cachedSubscribtion
+				subscribeArguments = arguments;
 			
 			//Iterating through _eventObject to find proper nsObject
 			nsObject = _eventObject;
@@ -945,15 +943,8 @@ var AnnConfig = AnnConfig || {};
 				if (typeof nsObject[parts[i]] === "undefined") {
 					nsObject[parts[i]] = {};
 					nsObject[parts[i]]['_events'] = [];
-					nsObject[parts[i]]['_publishes'] = [];
 				}
 				nsObject = nsObject[parts[i]];
-				if(cachedSubscribtion === true) {
-					while(k < nsObject['_publishes'].length) {
-						callback.apply(givenObject, nsObject['_publishes'][k]);
-						k++;
-					}
-				}
 			}
 			
 			eventObject = {

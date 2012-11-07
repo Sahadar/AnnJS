@@ -33,3 +33,4 @@ Documentation will be soon
   IE6/7.
 * Protection against modifying running code by user
 * Blazingly fast in compare with other frameworks
+* Ultra lightweight - minified and gzipped takes only 4,7kB

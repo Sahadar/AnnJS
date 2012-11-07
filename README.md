@@ -1,102 +1,32 @@
-AnnJS
-=====
-**An**other **n**ew-fashion JavaScript Framework
+# [AnnJS](http://annjs.com)
+AnnJavaScript Framework
 
-Official site
--------------
+## Official site
 
 http://annjs.com
 
-Requires
---------
+## Requires
 
-- jQuery.js (http://jquery.com/)
-- LazyLoad.js (https://github.com/rgrove/lazyload/)
+* jQuery.js (http://jquery.com/)
+* LazyLoad.js (https://github.com/rgrove/lazyload/)
 
-Usage
---------
+## Quick start
 
-**Please check examples first**
+**Check examples code then run them from official website**
+Documentation will be soon
 
-Defining controller:
-```js
-;(function(AnnJS) {
-	var config = {
-		namespace	: 'controllername'
-	}
-	AnnJS.registerController(config, {
-		__construct : function() {
-			var that = this;
+## Features
 
-			console.info(that.namespace, '.construct()');
-		},
-		onDomReady : function() {
-			var that = this;
-
-			console.info(that.namespace, '.onDomReady()');
-			setTimeout(function() {
-				that.shot();
-			}, 2000);
-			setTimeout(function() {
-				that.shot2();
-			}, 5000);
-		},
-		shot : function() {
-			var that = this;
-
-			console.info(that.namespace, '.shot()');
-		},
-		shot2 : function() {
-			var that = this;
-
-			console.info(that.namespace, '.shot2()');
-		}
-	});
-})(AnnJS);
-```
-Defining controller (which will wait for controllername.shot execution):
-```js
-;(function(AnnJS) {
-	var config = {
-		namespace  : 'controllername.2',
-		//dependencies
-		//waits until controllername.shot executes then gives to "that.refs.controllername" reference to 'controllername" object
-		refs : {
-			controllername : 'controllername.shot'
-		}
-	}
-	AnnJS.registerController(config, {
-		__construct : function() {
-			var that = this;
-
-			console.info(that.namespace, '.construct()');
-		},
-		onDomReady : function() {
-			var that = this;
-
-			console.info(that.namespace, '.onDomReady()');
-			that.shot();
-		},
-		shot : function() {
-			var that = this;
-
-			console.info(that.namespace, '.shot()');
-		}
-	});
-})(AnnJS);
-```
-Versions:
----------
-
-0.01
-- method registerController
-- method execute
-- method namespace
-- made example about dependencies
-
-0.02:
-- method registerMixin
-- method mixin
-- improved events
-- improved controller method: makeObject
-- made example about events
+* Code run dependency features
+* Load templates, js and css on demand with cache'ing
+* Adjusted to work with minifiers
+* Fully configurable
+* Debugger included
+* Advanced event system with event bubble'ing through namespace
+* Full objective with possibility to extend objects
+* Sorting objects through its data which allows to easily find object with desired parameter
+* Cross-browser compatible (Chrome, Opera, Safari, Firefox 3.6+, IE6+).
+* Designed with progressive enhancement in mind.
+* Protection against any stray `console.log` causing JavaScript errors in
+  IE6/7.
+* Protection against modifying running code by user

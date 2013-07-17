@@ -1,19 +1,10 @@
 /**
  *
- * AnnJS JavaScript Framework
- * version: 0.03
+ * AnnJS - JavaScript Framework
+ * version: 0.01
  *
  * Author: Wojciech Dłubacz (Sahadar)
  * Licensed under GPL Version 2 license
- *
- * Uses jQuery.js
- * Copyright 2012, John Resig
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * Uses LazyLoad.js (https://github.com/rgrove/lazyload/)
- * Copyright (c) 2011 Ryan Grove (ryan@wonko.com). All rights reserved
- *
  */
 var AnnConfig = AnnConfig || {};
 ;(function($, LazyLoad, undefined, _AnnConfig) {

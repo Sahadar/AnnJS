@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * AnnJS JavaScript Framework
  * version: 0.03
  *
@@ -10,45 +10,45 @@
  * Copyright 2012, John Resig
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
- * 
+ *
  * Uses LazyLoad.js (https://github.com/rgrove/lazyload/)
  * Copyright (c) 2011 Ryan Grove (ryan@wonko.com). All rights reserved
- * 
+ *
  */
 var AnnConfig = AnnConfig || {};
 ;(function($, LazyLoad, undefined, _AnnConfig) {
 	if(typeof console === 'undefined') {
-		console={log:function(){return!0},error:function(){return!0},info:function(){return!0},
-		warn:function(){return!0},debug:function(){return!0},time:function(){return!0},timeEnd:function(){return!0},
-		groupCollapsed:function(){return!0},groupEnd:function(){return!0},group:function(){return!0}};
+		console={log:function(){return!0;},error:function(){return!0;},info:function(){return!0;},
+		warn:function(){return!0;},debug:function(){return!0;},time:function(){return!0;},timeEnd:function(){return!0;},
+		groupCollapsed:function(){return!0;},groupEnd:function(){return!0;},group:function(){return!0;}};
 	}
 	console.info('Welcome in '+location.host+', u\'re now working with AnnJS framework');
 	$(document).ready(function() {
-		console.info('DOM content has loaded, OnDOMready started executing')
+		console.info('DOM content has loaded, OnDOMready started executing');
 	});
 	AnnConfig = $.extend(true, {
-		debug			: true, //allow debugger
-		cssAsset		: [], 	//array of css already loaded on page
-		jsAsset			: [], 	//array of js already loaded on page
-		minifyDir		: '', 	//directory to minify
-		minifyAllowed	: false, //true if minify is allowed on this website
-		tplDir			: '/tpl.php?file=', //where is Your mustache template directory
-		jsDir			: '/lib/', //where is Your js folder directory
-		cssDir			: '/css/',
-		tplTimeStampPrefix		: '?',
-		jsTimeStampPrefix		: '?',
-		cssTimeStampPrefix		: '?',
-		getTemplateMethod		: 'GET',
-		timeStamp				: Math.floor(Math.random()*1000000000000000),
-		tplTimeStamp 			: Math.floor(Math.random()*1000000000000000),
-		tplSuffix 				: '.tpl',
-		language				: null,
-		fulldebug				: false,
-		hashString				: 'data-hash'
-		
+		debug            : true, //allow debugger
+		cssAsset        : [],     //array of css already loaded on page
+		jsAsset            : [],     //array of js already loaded on page
+		minifyDir        : '',     //directory to minify
+		minifyAllowed    : false, //true if minify is allowed on this website
+		tplDir            : '/tpl.php?file=', //where is Your mustache template directory
+		jsDir            : '/lib/', //where is Your js folder directory
+		cssDir            : '/css/',
+		tplTimeStampPrefix        : '?',
+		jsTimeStampPrefix        : '?',
+		cssTimeStampPrefix        : '?',
+		getTemplateMethod        : 'GET',
+		timeStamp                : Math.floor(Math.random()*1000000000000000),
+		tplTimeStamp             : Math.floor(Math.random()*1000000000000000),
+		tplSuffix                 : '.tpl',
+		language                : null,
+		fulldebug                : false,
+		hashString                : 'data-hash'
+
 		}, AnnConfig);
 	_AnnConfig = $.extend(true, {}, AnnConfig);
-	
+
 	var tracingObject = {
 		length : 0
 	};
@@ -95,10 +95,10 @@ var AnnConfig = AnnConfig || {};
 	 * @param  {string} p_val       String which we're looking for
 	 * @param  {array} arrayObject Array in which we're searching
 	 * @return {boolean}
-	 * 		true - if found
-	 * 		false - if not found
+	 *         true - if found
+	 *         false - if not found
 	 */
-	in_array = function(p_val,arrayObject) { //works globally
+	inArray = function(p_val,arrayObject) { //works globally
 		for(var i = 0, l = arrayObject.length; i < l; i++) {
 			if(arrayObject[i] == p_val) {
 				return true;
@@ -106,7 +106,7 @@ var AnnConfig = AnnConfig || {};
 		}
 		return false;
 	}
-	
+
 	var _eventObject = {};
 	var _executionObject = {}; //storage of execution
 	var _templatesStorage = {}; //storage of callback for template
@@ -128,46 +128,32 @@ var AnnConfig = AnnConfig || {};
 			nsObject = nsObject[parts[i]];
 		}
 		return nsObject;
-	};
-	
+	}
+
 	/**
 	 * AnnJS private object
 	 * @type {object}
 	 */
 	var _AnnJS = {
-		getData : function(element, remove) {
-			var that = element,
-				remove = (typeof remove !== 'undefined') ? remove : true;
-			
-			if(that.attr('data-ann') !== undefined && that.attr('data-ann')) {
-				var data = $.parseJSON(that.attr('data-ann'));
-				if(remove) {
-					that.removeAttr('data-ann');
-				}
-				return data;
-			} else {
-				return null;
-			}
-		},
 		/**
 		 * Objected mixins
 		 */
 		objects : {
 			/**
 			 * Funkcja odpowiedzialna za obsluge przestrzeni nazw w obiekcie _objects
-			 * @param ns_string string w ktorym po kropce "dyktujemy" jakie kolejne obiekty chcemy tworzyc
+			 * @param nsString string w ktorym po kropce "dyktujemy" jakie kolejne obiekty chcemy tworzyc
 			 * @return parent Zwraca obiekt _objects
 			 */
-			namespace : function(ns_string) {
-				var ns_string = (typeof ns_string === 'string') ? ns_string : (console.error('ns_string must be string type'), 'randomString'),
-					parts = ns_string.split('.'),
+			namespace : function(nsString) {
+				nsString = (typeof nsString === 'string') ? nsString : (console.error('nsString must be string type'), 'randomString');
+				var	parts = nsString.split('.'),
 					parent = _AnnJS.objects,
 					i;
-				
+
 				if (parts[0] === "objects") {
 					parts = parts.slice(1);
 				}
-				
+
 				for (i = 0; i < parts.length; i += 1) {
 					if (typeof parent[parts[i]] === "undefined") {
 						parent[parts[i]] = {};
@@ -182,13 +168,13 @@ var AnnConfig = AnnConfig || {};
 		/**
 		 * Returns mixin from given namespace
 		 * @param string namespace The name of mixin which we want to obtain
-		 * @param object object which 
+		 * @param object object which
 		 * @return boolean true -> succeeded
 		 *                 false -> failed
 		 */
 		registerMixin : function(namespace, object) {
-			var namespace = (typeof namespace === 'string') ? namespace : console.error('namespace must be string type'),
-				that = this,
+			namespace = (typeof namespace === 'string') ? namespace : console.error('namespace must be string type');
+			var that = this,
 				functionName = null;
 
 			if(typeof that.mixins[namespace] === 'object') {
@@ -208,25 +194,25 @@ var AnnConfig = AnnConfig || {};
 		 */
 		whatToLoad : function(what, thingsToLoad, loadPrefix) {
 			var prefixFolder = (AnnJS.minifyOn()) ? '/'+_AnnConfig.minifyDir+'/b='+what+'&f=' : loadPrefix,
-				thingsToLoad = (thingsToLoad instanceof Array || typeof thingsToLoad === 'string') ? thingsToLoad : console.error('thingsToLoad must be array or string type'),
 				sendThingsToLoad = [],
 				whatArrayName = (what === 'css') ? 'styles' : (what === 'js') ? 'scripts' : null, //array name in which we will search
 				timeStampPrefix = (what === 'css') ? _AnnConfig.cssTimeStampPrefix : (what === 'js') ? _AnnConfig.jsTimeStampPrefix : AnnJS.generateRandomNumber(),
 				timeStamp = _AnnConfig.timeStamp;
-			
+			thingsToLoad = (thingsToLoad instanceof Array || typeof thingsToLoad === 'string') ? thingsToLoad : console.error('thingsToLoad must be array or string type');
+
 			if(whatArrayName === null) {
 				return (console.warn('"what" has to be "css" or "js"'), null);
 			}
-			if(typeof thingsToLoad === 'string' && !in_array(thingsToLoad, AnnJS[whatArrayName]["__loaded"])) {
+			if(typeof thingsToLoad === 'string' && !inArray(thingsToLoad, AnnJS[whatArrayName]["__loaded"])) {
 				AnnJS[whatArrayName]["__loaded"].push(thingsToLoad);
 				return prefixFolder + thingsToLoad + '.' + what + timeStampPrefix + timeStamp;
-			} else if(thingsToLoad instanceof Array && thingsToLoad.length === 1 && !in_array(thingsToLoad[0], AnnJS[whatArrayName]["__loaded"])) {
+			} else if(thingsToLoad instanceof Array && thingsToLoad.length === 1 && !inArray(thingsToLoad[0], AnnJS[whatArrayName]["__loaded"])) {
 				AnnJS[whatArrayName]["__loaded"].push(thingsToLoad[0]);
 				return prefixFolder + thingsToLoad[0] + '.' + what + timeStampPrefix + timeStamp;
 			} else if(thingsToLoad instanceof Array  && thingsToLoad.length > 1) { //from here there will be no strings
 				$.each(thingsToLoad, function(index, value) {
 					var fileName = value;
-					if(!in_array(fileName, AnnJS[whatArrayName]["__loaded"])) {
+					if(!inArray(fileName, AnnJS[whatArrayName]["__loaded"])) {
 						AnnJS[whatArrayName]["__loaded"].push(fileName);
 						sendThingsToLoad.push(((!AnnJS.minifyOn()) ? prefixFolder : '') + fileName + '.' + what);
 					}
@@ -242,7 +228,7 @@ var AnnConfig = AnnConfig || {};
 					sendThingsToLoad[index] += timeStampPrefix + timeStamp;
 				});
 			}
-			
+
 			if(sendThingsToLoad instanceof Array && sendThingsToLoad.length > 0) {
 				return sendThingsToLoad;
 			} else {
@@ -256,56 +242,56 @@ var AnnConfig = AnnConfig || {};
 		 * @return undefined - nic nie zwracamy, dziaÅ‚amy na callbacku, jeÅ¼eli nie podamy callbacka return false;
 		 */
 		getTemplate : function(templateName, callback) {
-			var templateName = (typeof templateName === 'string') ? templateName : console.error('templateName must be string type'),
-				callback = (typeof callback === 'function') ? callback : (function(){return false}),
-				that = AnnJS.templates,
+			templateName = (typeof templateName === 'string') ? templateName : console.error('templateName must be string type');
+			callback = (typeof callback === 'function') ? callback : function() {return false;};
+			var that = AnnJS.templates,
 				tplRotator = null; //interval function
-		
+
 			if(typeof _templatesStorage[templateName] !== 'object' || !(_templatesStorage[templateName] instanceof Array)) {
 				_templatesStorage[templateName] = [];
 			}
 			_templatesStorage[templateName].push(callback);
 			if(typeof that[templateName] === 'undefined') {
-	    		that[templateName] = 'loading';
-	    		$.ajax({
+				that[templateName] = 'loading';
+				$.ajax({
 					type : "GET",
 					dataType: 'text',
 					cache : true,
-				    url: window.location.href + _AnnConfig.tplDir + templateName + _AnnConfig.tplSuffix + _AnnConfig.tplTimeStampPrefix + _AnnConfig.tplTimeStamp,
-				    success : function(data) {
-				    	var template = null,
-				    		result = null,
-				    		i = 0,
-				    		templateStorageLength = 0;
-				    	
-				    	if(data === '') {
-				    		console.error('We\'re sorry but there is no such template with name '+templateName);
-				    		return;
-				    	}
-				    	if(typeof Mustache === 'object') {
-				    		that[templateName] = data;
-				    		templateStorageLength = _templatesStorage[templateName].length;
-					    	for(i = 0; i < templateStorageLength; i++) {
-					    		_templatesStorage[templateName].shift()(that[templateName]);
-					    	}
-				    	} else {
-				    		delete that[templateName];
-				    		console.error('We\'re sorry but template engine has not occured');
-				    	}
-				    }
+					url: window.location.protocol + '//' + window.location.host + _AnnConfig.tplDir + templateName + _AnnConfig.tplSuffix + _AnnConfig.tplTimeStampPrefix + _AnnConfig.tplTimeStamp,
+					success : function(data) {
+						var template = null,
+							result = null,
+							i = 0,
+							templateStorageLength = 0;
+
+						if(data === '') {
+							console.error('We\'re sorry but there is no such template with name '+templateName);
+							return;
+						}
+						if(typeof Mustache === 'object') {
+							that[templateName] = data;
+							templateStorageLength = _templatesStorage[templateName].length;
+							for(i = 0; i < templateStorageLength; i++) {
+								_templatesStorage[templateName].shift()(that[templateName]);
+							}
+						} else {
+							delete that[templateName];
+							console.error('We\'re sorry but template engine has not occured');
+						}
+					}
 				});
 			}
 		},
 		/**
 		 * Controllers supervisor
 		 * If object already exists then this existing object will be returned
-		 * 		otherwise object will be attached to namespace
-		 * @param ns_string string in this string dot is separator for the objects
+		 *         otherwise object will be attached to namespace
+		 * @param nsString string in this string dot is separator for the objects
 		 * @return parent returns created object
 		 */
-		controller : function(ns_string) {
-			var ns_string = (typeof ns_string === 'string') ? ns_string : console.error('ns_string must be string type'),
-				parts = ns_string.split('.'),
+		controller : function(nsString) {
+			nsString = (typeof nsString === 'string') ? nsString : console.error('nsString must be string type');
+			var	parts = nsString.split('.'),
 				checkedParts = [],
 				parent = _controllers, //setting initialization namespace
 				i = 0;
@@ -328,12 +314,12 @@ var AnnConfig = AnnConfig || {};
 			if(parent == null) {
 				parent = {};
 			}
-			parent.namespace = ns_string;
+			parent.namespace = nsString;
 			parent.createdObjects = [];
 			parent.rebuildObjectsTable = function() {
 				var that = this,
 					objectArray = [];
-				
+
 				for(dataName in that.createdObjects.all) {
 					//if element has to be removed
 					if(typeof that.createdObjects.all[dataName] !== 'object' || (that.createdObjects.all[dataName].data && that.createdObjects.all[dataName].data.toRemove === true)) {
@@ -344,13 +330,13 @@ var AnnConfig = AnnConfig || {};
 					};
 					objectArray.push(that.createdObjects.all[dataName]);
 				}
-				
+
 				delete that.createdObjects;
 				that.createdObjects = [];
 				that.createdObjects.all = [];
-				
-				for(rootObjectName in objectArray) {
-					rootObject = objectArray[rootObjectName];
+
+				for(var rootObjectName in objectArray) {
+					var rootObject = objectArray[rootObjectName];
 					that.createdObjects.push(rootObject);
 					that.createdObjects.all.push(rootObject);
 					if(rootObject.data) {
@@ -375,12 +361,12 @@ var AnnConfig = AnnConfig || {};
 						}
 					}
 				}
-			}
-			
+			};
+
 			parent.makeObject = function(main, extension) {
 				var that = this;
 				var rootObject = {};
-				
+
 				//for making clear objects without element relation
 				if(typeof main === 'object' && !(main instanceof jQuery)) {
 					extension = main;
@@ -393,19 +379,19 @@ var AnnConfig = AnnConfig || {};
 						elements : {
 							main : main
 						}
-					}
-					
+					};
+
 					if(main.attr('data-ann') !== undefined) {
 						$.extend(true, extension, {
-							data: _AnnJS.getData(main)
+							data: AnnJS.getData(main)
 						});
 					}
 				}
-				
+
 				if(typeof extension !== 'undefined') {
 					$.extend(true, rootObject, extension);
 				}
-				
+
 				/*
 				 * Elements selector execution
 				 */
@@ -415,7 +401,7 @@ var AnnConfig = AnnConfig || {};
 							continue;
 						}
 						selector = rootObject.elements[element];
-						
+
 						if(typeof selector === 'string') {
 							rootObject.elements[element] = main.find(rootObject.elements[element]);
 						} else if(typeof selector === 'object' && !(selector instanceof Array) && typeof selector.main === 'string') {
@@ -424,14 +410,14 @@ var AnnConfig = AnnConfig || {};
 								var mainElement = rootObject.elements[selector.main];
 								var properSelector = $.extend({}, selector);
 								delete properSelector.main;
-								rootObject.elements[element] = AnnJS.callQueries(properSelector, mainElement, rootObject);
+								rootObject.elements[element] = _AnnJS.callQueries(properSelector, mainElement, rootObject);
 							})();
 							}
 						} else if(typeof selector === 'object' && (selector instanceof Array) && typeof selector[0] === 'string') {
 							if(rootObject.elements[selector[0]].length === 1) {
 							(function() {
 								var mainElement = rootObject.elements[selector[0]];
-								rootObject.elements[element] = AnnJS.callQueries(selector, mainElement, rootObject);
+								rootObject.elements[element] = _AnnJS.callQueries(selector, mainElement, rootObject);
 							})();
 							}
 						}
@@ -449,8 +435,8 @@ var AnnConfig = AnnConfig || {};
 					var hashObject = _AnnJS.objects.namespace(that.namespace);
 					$A.addToHash(hashObject, rootObject);
 				}
-				
-				
+
+
 				if(rootObject.data) {
 					for(dataName in rootObject.data) {
 						if(dataName instanceof Array || typeof dataName === 'object') {
@@ -473,15 +459,15 @@ var AnnConfig = AnnConfig || {};
 						}
 					}
 				}
-				
+
 				rootObject.root = that;
 				rootObject.createdObjects = [];
-				
+
 				that.createdObjects.push(rootObject);
-				
+
 				if(!that.createdObjects.all) that.createdObjects.all = [];
 				that.createdObjects.all.push(rootObject);
-				
+
 				//objects can make other objects
 				rootObject.makeObject = function() {
 					var madeObject = parent.makeObject.apply(rootObject, arguments);
@@ -491,21 +477,21 @@ var AnnConfig = AnnConfig || {};
 				rootObject.rebuildObjectsTable = function() {
 					return parent.rebuildObjectsTable.apply(rootObject, arguments);
 				}
-				
+
 				//executing construct
 				if(typeof rootObject.__construct === 'function') {
 					rootObject.__construct();
 					delete rootObject.__construct;
 				}
-				
+
 				//rootObject - for objects made by controller - events subscribing
 				if(rootObject.events) {
-					for(ns_string in rootObject.events) {
+					for(nsString in rootObject.events) {
 						(function() {
-						var eventCallback = rootObject.events[ns_string];
-						var subscribtion = AnnJS.subscribe(ns_string, eventCallback, rootObject);
-						
-						rootObject.events[ns_string] = subscribtion;
+						var eventCallback = rootObject.events[nsString];
+						var subscribtion = AnnJS.subscribe(nsString, eventCallback, rootObject);
+
+						rootObject.events[nsString] = subscribtion;
 						})();
 					}
 				}
@@ -527,7 +513,7 @@ var AnnConfig = AnnConfig || {};
 				obtainedElement = mainElement,
 				property = null,
 				errorWhileExecuting = false;
-			
+
 			for(calledFunction in queryObject) {
 				calledObject = null;
 				//If array will be given, first element won't be used
@@ -582,7 +568,7 @@ var AnnConfig = AnnConfig || {};
 				namespace = givenObject.namespace,
 				onDomReadyRotator = null,
 				reference = null,
-				ns_string = null, //strings used to loop through events
+				nsString = null, //strings used to loop through events
 				selector = null;
 
 			$.extend(true, rootObject, givenObject);
@@ -620,7 +606,7 @@ var AnnConfig = AnnConfig || {};
 					}
 					return function() {
 						var that = this;
-						
+
 						_executionObject.done = true;
 						if(_AnnConfig.fulldebug === true) {
 							tracingObject[tracingObject.length] = {
@@ -641,29 +627,29 @@ var AnnConfig = AnnConfig || {};
 				})(functionName));
 			}
 			delete functionName;
-			
+
 			if(typeof rootObject.onDomReady === 'function' && _AnnConfig.fulldebug === true) {
 				console.info('Appending domReady for ' + rootObject.namespace);
 			}
-			
+
 			if(rootObject.events) {
-				for(ns_string in rootObject.events) {
+				for(nsString in rootObject.events) {
 					(function() {
-					var eventCallback = rootObject.events[ns_string];
-					var subscribtion = AnnJS.subscribe(ns_string, eventCallback, rootObject);
-					
-					rootObject.events[ns_string] = subscribtion;
+					var eventCallback = rootObject.events[nsString];
+					var subscribtion = AnnJS.subscribe(nsString, eventCallback, rootObject);
+
+					rootObject.events[nsString] = subscribtion;
 					})();
 				}
 			}
-			
+
 			if(typeof rootObject.__construct === 'function') {
 				rootObject.__construct(); //executing constructor
 				delete rootObject.__construct;
 			}
-			
+
 			$(document).ready(function() {
-				function onDomReady() {	
+				function onDomReady() {
 					if(typeof rootObject.onDomReady === 'function') {
 						if(_AnnConfig.fulldebug === true) {
 							console.info('DomReady for ' + rootObject.namespace + ' started');
@@ -699,7 +685,7 @@ var AnnConfig = AnnConfig || {};
 							}
 							if (rootObject.elements[element].length === 0) {
 								console.warn('There is no element with "'+selector+'" selector, executed by "'+namespace+'" object')
-							}	
+							}
 						}
 					}
 					onDomReady();
@@ -735,7 +721,7 @@ var AnnConfig = AnnConfig || {};
 					executeCallQueries();
 				}
 			});
-			
+
 			if(_AnnConfig.fulldebug === true) {
 				console.info('End of '+namespace);
 			}
@@ -743,26 +729,40 @@ var AnnConfig = AnnConfig || {};
 	};
 	/**
 	 * AnnJS initialization
-	 * @param {string} ns_string define where event will be sent
+	 * @param {string} nsString define where event will be sent
 	 * @param {array} args arguments which will be applied to callbacks
 	 * @param {boolean} recurrent define if we want to execute callbacks in every part of namespace
 	 * @param {number} depth depth to which event will bubble (executing from bottom to end)
 	 */
 	$A = AnnJS = {
+		getData : function(element, remove) {
+			var that = element,
+				remove = (typeof remove !== 'undefined') ? remove : true;
+
+			if(that.attr('data-ann') !== undefined && that.attr('data-ann')) {
+				var data = $.parseJSON(that.attr('data-ann'));
+				if(remove) {
+					that.removeAttr('data-ann');
+				}
+				return data;
+			} else {
+				return null;
+			}
+		},
 		/**
 		 * Executes method and then callback after given method executions
-		 * @param  {object} givenObject 
+		 * @param  {object} givenObject
 		 * @return {[type]}
 		 */
 		execute : function(givenObject) {
 			var that = this,
-				relatives	= (givenObject.relatives != null) ? givenObject.relatives : null,
-				args		= givenObject.args || [],
-				type 		= givenObject.type || 'controller',
-				method		= givenObject.method, //namespace to method
-				callback	= givenObject.callback,
+				relatives    = (givenObject.relatives != null) ? givenObject.relatives : null,
+				args        = givenObject.args || [],
+				type         = givenObject.type || 'controller',
+				method        = givenObject.method, //namespace to method
+				callback    = givenObject.callback,
 				execute     = givenObject.execute,
-				nsObject	= null,
+				nsObject    = null,
 				controllerObject = null,
 				result      = null,
 				methodName  = null, //method name given to execute
@@ -792,9 +792,9 @@ var AnnConfig = AnnConfig || {};
 						}
 						if(typeof method === 'string') {
 							that.execute({
-								method		: method,
-								args		: args,
-								callback	: callback
+								method        : method,
+								args        : args,
+								callback    : callback
 							});
 						} else if(typeof execute === 'function') {
 							execute();
@@ -834,8 +834,8 @@ var AnnConfig = AnnConfig || {};
 				} else {
 					nsObject = getExecutionObject(method);
 					nsObject['after'].push({
-						method	 : method,
-						args	 : args,
+						method     : method,
+						args     : args,
 						callback : callback
 					});
 				}
@@ -843,29 +843,29 @@ var AnnConfig = AnnConfig || {};
 		},
 		/**
 		 * Publish event
-		 * @param ns_string string namespace string splited by dots
+		 * @param nsString string namespace string splited by dots
 		 * @param args array of arguments given to callbacks
 		 * @param recurrent bool should execution be bubbled throught namespace
 		 * @param depth integer how many namespaces separated by dots will be executed
 		 */
-		publish : function(ns_string, args, recurrent, depth) {
-			var ns_string = (typeof ns_string === 'string') ? ns_string : (console.error('ns_string must be string type'), 'randomString'),
-				parts = ns_string.split('.'),
+		publish : function(nsString, args, recurrent, depth) {
+			var nsString = (typeof nsString === 'string') ? nsString : (console.error('nsString must be string type'), 'randomString'),
+				parts = nsString.split('.'),
 				recurrent = recurrent || false, // bubbles event throught namespace if true
 				nsObject, //Namespace object to which we attach event
 				args = (args) ? args : [],
 				i;
-			
+
 			function executeCallback(subscribtions) {
 				$.each(subscribtions, function() {
 					this.callback.apply(this.object, args);
 				});
 			}
-			
+
 			nsObject = _eventObject;
 			for (i = 0; i < parts.length; i += 1) {
 				if (typeof nsObject[parts[i]] === "undefined") {
-					console.warn('There is no ' + ns_string + ' subscription');
+					console.warn('There is no ' + nsString + ' subscription');
 					return null;
 				}
 				nsObject = nsObject[parts[i]];
@@ -875,20 +875,20 @@ var AnnConfig = AnnConfig || {};
 					executeCallback(nsObject['_events']);
 				}
 			}
-			
+
 			if(recurrent === false) {
 				executeCallback(nsObject['_events']);
 			}
 		},
 		/**
 		 * Subscribe event
-		 * @param ns_string string namespace string splited by dots
+		 * @param nsString string namespace string splited by dots
 		 * @param callback function function executed after publishing event
 		 * @param givenObject object/nothing Optional object which will be used as "this" in callback
 		 */
-		subscribe : function(ns_string, callback, givenObject) {
-			var ns_string = (typeof ns_string === 'string') ? ns_string : (console.error('ns_string must be string type'), 'randomString'),
-				parts = ns_string.split('.'),
+		subscribe : function(nsString, callback, givenObject) {
+			var nsString = (typeof nsString === 'string') ? nsString : (console.error('nsString must be string type'), 'randomString'),
+				parts = nsString.split('.'),
 				nsObject, //Namespace object to which we attach event
 				givenObjectSet = (givenObject) ? true : false,
 				givenObject = (givenObjectSet) ? givenObject : callback,
@@ -896,7 +896,7 @@ var AnnConfig = AnnConfig || {};
 				i = 0,
 				k = 0,
 				subscribeArguments = arguments;
-			
+
 			//Iterating through _eventObject to find proper nsObject
 			nsObject = _eventObject;
 			for (i = 0; i < parts.length; i += 1) {
@@ -908,37 +908,37 @@ var AnnConfig = AnnConfig || {};
 				}
 				//if there is "+" in namespace then there will be multisubscribtion
 				if(givenObjectSet && parts[i].substring(0, 1) === '+') {
-					return (function(namespace_element, ns_string) {
+					return (function(namespace_element, nsString) {
 						var j = 0,
 							subscribeArray = [];
-						
+
 						for(j = 0; j < namespace_element.length; j++) {
 							parts[i] = namespace_element[j];
 							subscribeArguments[0] = parts.join('.');
 							subscribeArray.push(AnnJS.subscribe.apply(AnnJS, subscribeArguments));
 						}
-						subscribeArguments[0] = ns_string;
-						return [ns_string, subscribeArray];
-					})(givenObject.data[parts[i].substring(1, parts[i].length)], ns_string);
+						subscribeArguments[0] = nsString;
+						return [nsString, subscribeArray];
+					})(givenObject.data[parts[i].substring(1, parts[i].length)], nsString);
 				}
 				//if there is "+" in namespace then try getting value from nsObject.data
 				if(givenObjectSet && parts[i].substring(0, 1) === '{') {
-					return (function(ns_string) {
+					return (function(nsString) {
 						var j = 0,
 							subscribeElements = parts[i].split(','),
 							subscribeArray = [];
-						
+
 						subscribeElements[0] = subscribeElements[0].substring(1, subscribeElements[0].length);
 						subscribeElements[subscribeElements.length-1] = subscribeElements[subscribeElements.length-1].substring(0, subscribeElements[subscribeElements.length-1].length-1);
-						
+
 						for(j = 0; j < subscribeElements.length; j++) {
 							parts[i] = subscribeElements[j];
 							subscribeArguments[0] = parts.join('.');
 							subscribeArray.push(AnnJS.subscribe.apply(AnnJS, subscribeArguments));
 						}
-						subscribeArguments[0] = ns_string;
-						return [ns_string, subscribeArray];
-					})(ns_string);
+						subscribeArguments[0] = nsString;
+						return [nsString, subscribeArray];
+					})(nsString);
 				}
 				if (typeof nsObject[parts[i]] === "undefined") {
 					nsObject[parts[i]] = {};
@@ -946,31 +946,31 @@ var AnnConfig = AnnConfig || {};
 				}
 				nsObject = nsObject[parts[i]];
 			}
-			
+
 			eventObject = {
-				callback	: callback,
-				object		: givenObject // "this" parameter in executed function
+				callback    : callback,
+				object        : givenObject // "this" parameter in executed function
 			};
-			
+
 			nsObject['_events'].push(eventObject);
 			return [parts.join('.'), eventObject];
 		},
 		unsubscribe : function(subscribeObject) {
-			var ns_string = subscribeObject[0],
-				parts = ns_string.split('.'),
+			var nsString = subscribeObject[0],
+				parts = nsString.split('.'),
 				eventObject = subscribeObject[1],
 				nsObject;
-			
+
 			//Iterating through _eventObject to find proper nsObject
 			nsObject = _eventObject;
 			for (i = 0; i < parts.length; i += 1) {
 				if (typeof nsObject[parts[i]] === "undefined") {
-					console.error('There is no ' + ns_string + ' subscription');
+					console.error('There is no ' + nsString + ' subscription');
 					return null;
 				}
 				nsObject = nsObject[parts[i]];
 			}
-			
+
 			nsObject && $.each(nsObject['_events'], function(functionId){
 				if(this == eventObject) {
 					nsObject['_events'].splice(functionId, 1);
@@ -989,7 +989,7 @@ var AnnConfig = AnnConfig || {};
 				var styles = (typeof styles === 'string' || styles instanceof Array) ? styles : console.error('styles must be string or array type'),
 					cssDir = (typeof cssDir !== 'undefined') ? cssDir : _AnnConfig.cssDir,
 					that = this;
-				
+
 				var stylesToLoad = _AnnJS.whatToLoad('css', styles, cssDir);
 				if(stylesToLoad === null) {
 					if(_AnnConfig.fulldebug === true) {
@@ -1015,7 +1015,7 @@ var AnnConfig = AnnConfig || {};
 				var styles = (typeof scripts === 'string' || scripts instanceof Array) ? scripts : console.error('scripts must be string or array type'),
 					jsDir = (typeof jsDir !== 'undefined') ? jsDir : _AnnConfig.jsDir,
 					that = this;
-					
+
 				var scriptsToLoad = _AnnJS.whatToLoad('js', scripts, jsDir);
 				if(scriptsToLoad === null) {
 					if(_AnnConfig.fulldebug === true) {
@@ -1047,7 +1047,7 @@ var AnnConfig = AnnConfig || {};
 				callback = (typeof callback === 'function') ? callback : console.error('callback must be function type'),
 				that = this.templates,
 				bindObject = bindObject || window;
-			
+
 			if(typeof that[templateName] === 'string' && that[templateName] !== 'loading' && typeof Mustache === 'object') {
 				callback.call(bindObject, $(Mustache.to_html(that[templateName], data)));
 			} else {
@@ -1077,7 +1077,7 @@ var AnnConfig = AnnConfig || {};
 		/**
 		 * Controllers getter function
 		 * If object already exists then this existing object will be returned
-		 * 		otherwise object will be attached to namespace
+		 *         otherwise object will be attached to namespace
 		 * @param namespace string in this string dot is separator for the objects
 		 * @return parent returns created object
 		 */
@@ -1117,7 +1117,7 @@ var AnnConfig = AnnConfig || {};
 			var that = this;
 			var randomNumber = that.generateRandomNumber();
 			var elementHash = placement + '.' + randomNumber;
-			
+
 			element.attr(_AnnConfig.hashString, elementHash);
 			return randomNumber;
 		},
@@ -1131,11 +1131,11 @@ var AnnConfig = AnnConfig || {};
 		 */
 		getObject : function(element) {
 			var elementHash;
-			
+
 			if(!element) {
 				return null;
 			}
-			
+
 			if(typeof element === 'string') {
 				elementHash = element;
 			} else if(typeof element === 'object') {
@@ -1148,7 +1148,7 @@ var AnnConfig = AnnConfig || {};
 			var parts = elementHash.split('.'),
 				parent = _AnnJS.objects,
 				i;
-			
+
 			if (parts[0] === "AnnJS") {
 				parts = parts.slice(1);
 			}
@@ -1168,7 +1168,7 @@ var AnnConfig = AnnConfig || {};
 		 */
 		addToHash : function(hashObject, elementObject) {
 			var elementObject = (elementObject instanceof Object) ? elementObject : console.error('elementObject must be object type');
-			
+
 			if(hashObject === null) {
 				hashObject = this;
 			}
@@ -1196,7 +1196,7 @@ var AnnConfig = AnnConfig || {};
 			if(_AnnConfig.fulldebug === true) {
 				console.info('Registering controller: ' + namespace);
 			}
-			var	extension =  (typeof extension === 'object') ? extension : console.error('extenstion must be object type, while running '+namespace);
+			var    extension =  (typeof extension === 'object') ? extension : console.error('extenstion must be object type, while running '+namespace);
 			//give namespace parameter to extension
 			if(typeof configure.refs === 'object' && configure.refs !== null) {
 				extension.refs = configure.refs;
@@ -1219,7 +1219,7 @@ var AnnConfig = AnnConfig || {};
 		registerMixin : function(configure, extension) {
 			var that = this,
 				namespace = (typeof configure.namespace === 'string') ? configure.namespace : console.error('namespace must be string type, while running '+namespace);
-			
+
 			if(_AnnConfig.fulldebug === true) {
 				console.info('Registering mixin: ' + namespace);
 			}
@@ -1227,7 +1227,7 @@ var AnnConfig = AnnConfig || {};
 
 			_AnnJS.registerMixin(configure.namespace, extension);
 		}
-	}
+	};
 	$.extend(AnnJS.scripts['__loaded'], _AnnConfig.jsAsset);
 	$.extend(AnnJS.styles['__loaded'], _AnnConfig.cssAsset);
 })(jQuery, LazyLoad, void(0), AnnConfig);

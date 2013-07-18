@@ -5,13 +5,13 @@
 		<script>
 			AnnJS.start({
 				core : {
-					debug			: true, //allow debugger
+					debug   		: true, //allow debugger
 					language		: null
 				},
 				loader : {
 					baseUrl: '../..',
 					paths: {
-						modules : 'lib/modules',
+						modules : 'examples/new_ann/lib/modules',
 						mixins : 'lib/mixins',
 
 						deferred: 'lib/deps/deferred/deferred',
@@ -29,6 +29,9 @@
 					shim: {
 						'less-library'  : {
 							exports : 'less'
+						},
+						'deferred'  : {
+							exports : 'deferred'
 						}
 					}
 				}
@@ -36,5 +39,6 @@
 		</script>
 	</head>
 	<body>
+		<div class="annjs" data-namespace="testing"></div>
 	</body>
 </html>

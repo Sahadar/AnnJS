@@ -13,6 +13,7 @@
 		groupCollapsed:function(){return!0;},groupEnd:function(){return!0;},group:function(){return!0;}};
 	}
 	var coreObject = null;
+	var mixinsObject = null;
 	var config = null;
 
 	window.AnnJS = {
@@ -27,8 +28,9 @@
 
 			config = startConfig;
 			require.config(startConfig.loader);
-			AnnJS.require(['app/core'], function(core) {
+			AnnJS.require(['app/core', 'app/mixins'], function(core, mixin) {
 				coreObject = core;
+				mixinsObject = mixin;
 				var body = core.DOM.getElements('body');
 				self.initialize(body);
 			});
@@ -71,6 +73,7 @@
 
 			AnnJS.require(['modules/'+namespace], function(obtainedObject) {
 				var privCore = coreObject.object.extend({}, coreObject);
+				coreObject.object.extend(obtainedObject, mixinsObject);
 
 				obtainedObject.namespace = namespace;
 				obtainedObject.core = privCore;

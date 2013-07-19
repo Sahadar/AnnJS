@@ -7,39 +7,42 @@ AnnJS.defineModule({
 		mainBox : '#main-box'
 	},
 	__construct : function() {
-		var that = this;
+		var self = this;
 
-		console.info('construct', that.namespace);
+		self.makeObject(null, {
+			hello : 'world!'
+		});
+		console.info('construct', self.namespace);
 		console.log(this);
 	},
 	data : {
 		name : 'lala'
 	},
 	onDomReady : function() {
-		var that = this,
-			text = 'onDomReady executed for '+that.namespace,
+		var self = this,
+			text = 'onDomReady executed for '+self.namespace,
 			info = $('<div>'+text+'</div>');
 
 		setTimeout(function() {
-			that.shot();
+			self.shot();
 		}, 2000);
 		setTimeout(function() {
-			that.touch();
+			self.touch();
 		}, 5000);
-		that.elements.mainBox.append(info);
+		self.elements.mainBox.append(info);
 	},
 	shot : function() {
-		var that = this,
-			text = 'Main box shooted by '+that.namespace,
+		var self = this,
+			text = 'Main box shooted by '+self.namespace,
 			info = $('<div>'+text+'</div>');
 
-		that.elements.mainBox.append(info);
+		self.elements.mainBox.append(info);
 	},
 	touch : function() {
-		var that = this,
-			text = 'Main box touched by '+that.namespace,
+		var self = this,
+			text = 'Main box touched by '+self.namespace,
 			info = $('<div>'+text+'</div>');
 
-		that.elements.mainBox.append(info);
+		self.elements.mainBox.append(info);
 	}
 });

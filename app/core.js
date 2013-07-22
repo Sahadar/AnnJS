@@ -5,10 +5,12 @@ AnnJS.define([
 	],
 	function(DOM, mediator, deferred) {
 
-	console.log(deferred);
-	return {
+	var core = {
+
 		DOM : DOM,
-		mediator : mediator.newInstance(),
+		mediator : mediator.newInstance({
+			separator : '.'
+		}),
 		deferred : deferred,
 		array : {
 			forEach : function(array, callback) {
@@ -70,17 +72,42 @@ AnnJS.define([
 				return false;
 			},
 			extend : function(destination, source) {
+				// var isSuper = destination['__isSuper'];
+
 				for (var property in source) {
 					if (source[property] && source[property].constructor &&
 						source[property].constructor === Object) {
+
 						destination[property] = destination[property] || {};
-						arguments.callee(destination[property], source[property]);
+						this.extend(destination[property], source[property]);
 					} else {
-						destination[property] = source[property];
+						if(source[property] instanceof Array) {
+							destination[property] = source[property].slice();
+						} else if(typeof source[property] === 'function' && typeof destination[property] === 'function') {
+							console.log('function!', property);
+							destination[property] = source[property];
+						} else {
+							destination[property] = source[property];
+						}
 					}
 				}
-				return destination;
+				// if(!isSuper) {
+				//	destination.__super = {
+				//		__isSuper : true
+				//	};
+				//	// prevent overriding super object
+				//	core.object.extend(destination.__super, source);
+				// }
+
+				if(arguments.length > 2) {
+					Array.prototype.splice.call(arguments, 1, 1);
+					return this.extend.apply(this, arguments);
+				} else {
+					return destination;
+				}
 			}
 		}
 	};
+
+	return core;
 });

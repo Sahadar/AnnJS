@@ -9,27 +9,30 @@ AnnJS.defineModule({
 	__construct : function() {
 		var self = this;
 
-		self.makeObject(null, {
+		var newObject = self.makeObject(null, {
 			hello : 'world!'
 		});
 		console.info('construct', self.namespace);
-		console.log(this);
+		console.log('this: ', this);
+		console.log('newObject: ', newObject);
+		var newObject2 = newObject.makeObject(null, {
+			hello : 'lamakota!'
+		});
+		console.log('newObject2: ', newObject2);
+		window.test = this;
+	},
+	events : {
+		myEvent : function(text) {
+			console.log('hello world1!', text);
+		}
+	},
+	onDomReady : function() {
+		console.log('domReady!');
+		// console.log(this.__super);
+		// this.__super.onDomReady();
 	},
 	data : {
 		name : 'lala'
-	},
-	onDomReady : function() {
-		var self = this,
-			text = 'onDomReady executed for '+self.namespace,
-			info = $('<div>'+text+'</div>');
-
-		setTimeout(function() {
-			self.shot();
-		}, 2000);
-		setTimeout(function() {
-			self.touch();
-		}, 5000);
-		self.elements.mainBox.append(info);
 	},
 	shot : function() {
 		var self = this,

@@ -7,39 +7,54 @@
  * Licensed under MIT license
  */
 (function() {
+var config = null;
+
+function onStartCallback(core, startCallback) {
 	if(typeof console === 'undefined') {
 		window.console={log:function(){return!0;},error:function(){return!0;},info:function(){return!0;},
 		warn:function(){return!0;},debug:function(){return!0;},time:function(){return!0;},timeEnd:function(){return!0;},
 		groupCollapsed:function(){return!0;},groupEnd:function(){return!0;},group:function(){return!0;}};
 	}
-	var coreObject = null;
-	var mixinsObject = null;
-	var config = null;
+	var domReady = core.deferred();
 
-	window.AnnJS = {
-		define : function() {
-			define.apply(this, arguments);
-		},
-		require : function() {
-			require.apply(this, arguments);
-		},
-		start : function(startConfig) {
-			var self = this;
+	// console.log(core.deferred);
+	function registerEvents(bindedObject) {
+		var objectNamespace = bindedObject.namespace;
+		core.object.forEach(bindedObject.events, function(namespace, callback) {
+			var eventNamespace = '';
 
-			config = startConfig;
-			require.config(startConfig.loader);
-			AnnJS.require(['app/core', 'app/mixins'], function(core, mixin) {
-				coreObject = core;
-				mixinsObject = mixin;
-				var body = core.DOM.getElements('body');
-				self.initialize(body);
-			});
-		},
+			if(namespace.charAt(0) !== '!') {
+				eventNamespace = objectNamespace+'.'+namespace;
+			} else {
+				eventNamespace = namespace.substring(1,namespace.length);
+			}
+
+			var subscribtion = core.mediator.subscribe(eventNamespace, callback, bindedObject);
+			bindedObject.events[namespace] = subscribtion;
+		});
+	}
+
+	(function onDomReady(){
+		var addListener = document.addEventListener || document.attachEvent,
+			removeListener =  document.removeEventListener || document.detachEvent,
+			eventName = document.addEventListener ? "DOMContentLoaded" : "onreadystatechange";
+
+		if(document.readyState = 'complete') {
+			domReady.resolve();
+		} else {
+			addListener.call(document, eventName, function(){
+				removeListener( eventName, arguments.callee, false );
+				domReady.resolve();
+			}, false );
+		}
+	})();
+
+	window.AnnJS = core.object.extend(window.AnnJS, {
 		initialize : function(element) {
 			var self = this;
 
 			if(element instanceof Array) {
-				coreObject.array.forEach(element, function(index, value) {
+				core.array.forEach(element, function(index, value) {
 					self.initialize(value);
 				});
 				return;
@@ -49,7 +64,7 @@
 				}
 				return;
 			}
-			var annJSElement = coreObject.DOM.getElements(element, '.annjs');
+			var annJSElement = core.DOM.getElements(element, '.annjs');
 			self.initializeModule(annJSElement);
 		},
 		getNamespace : function(annJSElement) {
@@ -59,7 +74,7 @@
 			var self = this;
 
 			if(annJSElement instanceof Array) {
-				coreObject.array.forEach(annJSElement, function(index, value) {
+				core.array.forEach(annJSElement, function(index, value) {
 					self.initializeModule(value);
 				});
 				return;
@@ -71,23 +86,52 @@
 			}
 			var namespace = AnnJS.getNamespace(annJSElement); //currently its one element
 
-			AnnJS.require(['modules/'+namespace], function(obtainedObject) {
-				var privCore = coreObject.object.extend({}, coreObject);
-				coreObject.object.extend(obtainedObject, mixinsObject);
+			AnnJS.require(['modules/'+namespace, 'app/object'], function(obtainedObject, appObject) {
+				var privCore = core.object.extend({}, core);
+				var module = null;
 
-				obtainedObject.namespace = namespace;
-				obtainedObject.core = privCore;
-				obtainedObject.__construct();
+				module = core.object.extend({}, appObject, obtainedObject);
+
+				module.namespace = namespace;
+				module.core = privCore;
+
+				if(module.events) {
+					registerEvents(module);
+				}
+				module.__construct();
+				domReady.promise(module.onDomReady);
 			});
 		},
 		defineModule : function(options, givenObject) {
-			// var args = Array.prototype.slice.call(arguments);
-
 			AnnJS.define.apply(this, [options.require, givenObject]);
 		},
 		log : function() {
 			console.info.apply(this, arguments);
 		}
-	};
+	});
 	AnnJS.log('Welcome in '+location.host+', u\'re now working with AnnJS framework');
+	startCallback();
+}
+
+window.AnnJS = {
+	define : function() {
+		define.apply(this, arguments);
+	},
+	require : function() {
+		require.apply(this, arguments);
+	},
+	start : function(startConfig, startCallback) {
+		var self = this;
+
+		config = startConfig;
+		require.config(startConfig.loader);
+		AnnJS.require(['app/core'], function(core) {
+			var body = core.DOM.getElements('body');
+
+			onStartCallback(core, function() {
+				self.initialize(body);
+			});
+		});
+	}
+};
 })();

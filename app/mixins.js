@@ -1,7 +1,8 @@
 AnnJS.define([
-	'app/core'
+	'app/core',
+	'app/object'
 	],
-	function(core) {
+	function(core, appObject) {
 
 	function elementsSelector() {
 		/*
@@ -70,36 +71,8 @@ AnnJS.define([
 		}
 	}
 
-	var mixinExtension = {
-		makeObject : function(main, extension) {
-			var self = this;
-			var rootObject = core.object.extend({}, mixinExtension);
-
-			if(typeof extension !== 'undefined') {
-				core.object.extend(rootObject, extension);
-			}
-
-			self.createdObjects = {
-				all : []
-			};
-			self.createdObjects.all.push(rootObject);
-
-			//Events subscribing
-			if(rootObject.events) {
-				core.object.forEach(rootObject.events, function(namespace, callback) {
-					var subscribtion = core.mediator.subscribe(namespace, callback, rootObject);
-					rootObject.events[namespace] = subscribtion;
-				});
-			}
-
-			//executing construct
-			if(typeof rootObject.__construct === 'function') {
-				rootObject.__construct();
-				delete rootObject.__construct;
-			}
-			return rootObject;
-		}
-	};
+	var mixinExtension = core.object.extend({}, appObject);
+	delete mixinExtension.onDomReady;
 
 	return mixinExtension;
 });

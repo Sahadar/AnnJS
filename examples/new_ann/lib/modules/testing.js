@@ -27,7 +27,11 @@ AnnJS.defineModule({
 		}
 	},
 	onDomReady : function() {
-		console.log('domReady!');
+		var self = this;
+		console.log('domReady 111 testing!');
+
+		// console.log('mediator', self);
+		// self.core.mediator.publish('testing.myEvent', ['texT!']);
 		// console.log(this.__super);
 		// this.__super.onDomReady();
 	},

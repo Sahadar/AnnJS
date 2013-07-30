@@ -99,7 +99,9 @@ function onStartCallback(core, startCallback) {
 					registerEvents(module);
 				}
 				module.__construct();
-				domReady.promise(module.onDomReady);
+				domReady.promise(function() {
+					module.onDomReady.apply(module, []);
+				});
 			});
 		},
 		defineModule : function(options, givenObject) {

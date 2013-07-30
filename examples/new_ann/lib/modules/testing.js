@@ -1,6 +1,5 @@
 AnnJS.defineModule({
-	require : [],
-	depends : []
+	require : []
 },
 {
 	elements : {
@@ -37,6 +36,9 @@ AnnJS.defineModule({
 	},
 	data : {
 		name : 'lala'
+	},
+	test : function() {
+		console.log('test from testing');
 	},
 	shot : function() {
 		var self = this,

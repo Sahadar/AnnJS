@@ -8,13 +8,13 @@
  */
 (function() {
 var config = null;
+if(typeof console === 'undefined') {
+	window.console={log:function(){return!0;},error:function(){return!0;},info:function(){return!0;},
+	warn:function(){return!0;},debug:function(){return!0;},time:function(){return!0;},timeEnd:function(){return!0;},
+	groupCollapsed:function(){return!0;},groupEnd:function(){return!0;},group:function(){return!0;}};
+}
 
 function onStartCallback(core, startCallback) {
-	if(typeof console === 'undefined') {
-		window.console={log:function(){return!0;},error:function(){return!0;},info:function(){return!0;},
-		warn:function(){return!0;},debug:function(){return!0;},time:function(){return!0;},timeEnd:function(){return!0;},
-		groupCollapsed:function(){return!0;},groupEnd:function(){return!0;},group:function(){return!0;}};
-	}
 	var domReady = core.deferred();
 
 	// console.log(core.deferred);
@@ -32,6 +32,10 @@ function onStartCallback(core, startCallback) {
 			var subscribtion = core.mediator.subscribe(eventNamespace, callback, bindedObject);
 			bindedObject.events[namespace] = subscribtion;
 		});
+	}
+
+	function extend(appObject, obtainedObject) {
+		return core.object.extend({}, appObject, obtainedObject);
 	}
 
 	(function onDomReady(){
@@ -85,26 +89,34 @@ function onStartCallback(core, startCallback) {
 				return;
 			}
 			var namespace = AnnJS.getNamespace(annJSElement); //currently its one element
+			console.log('namespace:' , namespace);
 
-			AnnJS.require(['modules/'+namespace, 'app/object'], function(obtainedObject, appObject) {
-				var privCore = core.object.extend({}, core);
-				var module = null;
-
-				module = core.object.extend({}, appObject, obtainedObject);
-
-				module.namespace = namespace;
-				module.core = privCore;
-
-				if(module.events) {
-					registerEvents(module);
+			AnnJS.require(['modules/'+namespace, 'app/object'], function(module, appObject) {
+				var requires = module.___options.require || [];
+				if(module.___options.extends instanceof Array) {
+					requires = core.array.merge(requires, module.___options.extends);
 				}
-				module.__construct();
-				domReady.promise(function() {
-					module.onDomReady.apply(module, []);
+				console.log(namespace, requires);
+				AnnJS.require(requires, function() {
+					var dependencies = arguments;
+					console.log('dependencies:', namespace, dependencies, requires);
+					var moduleObject = extend(appObject, module);
+
+					moduleObject.namespace = namespace;
+					moduleObject.core = core;
+
+					if(moduleObject.events) {
+						registerEvents(moduleObject);
+					}
+					moduleObject.__construct();
+					domReady.promise(function() {
+						moduleObject.onDomReady.apply(moduleObject, []);
+					});
 				});
 			});
 		},
 		defineModule : function(options, givenObject) {
+			givenObject.___options = options;
 			AnnJS.define.apply(this, [options.require, givenObject]);
 		},
 		log : function() {
